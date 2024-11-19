@@ -32,15 +32,18 @@ var is_downloading: bool = false
 var total_bytes: float = 0.0
 var download_retries: int = 0
 const MAX_RETRIES = 1
+var current_bytes = 0
+var download_timer: Timer = null
 
 func _ready():
 	http_request = HTTPRequest.new()
 	artifact_request = HTTPRequest.new()
 	download_request = HTTPRequest.new()
 	download_request.use_threads = true
-	download_request.download_chunk_size = 4096
+	download_request.download_chunk_size = 65536
 	download_request.body_size_limit = -1
 	download_request.timeout = 0
+	download_request.max_redirects = 5
 	
 	add_child(http_request)
 	add_child(artifact_request)
@@ -49,7 +52,6 @@ func _ready():
 	http_request.request_completed.connect(_on_request_completed)
 	artifact_request.request_completed.connect(_on_artifact_request_completed)
 	download_request.request_completed.connect(_on_download_completed)
-	download_request.connect("request_progress", _on_download_progress)
 	
 	fetch_workflow_info()
 	update_page_counter()
@@ -142,11 +144,26 @@ func download_current_workflow():
 		
 	is_downloading = true
 	download_start_time = Time.get_unix_time_from_system()
-	download_retries = 0
 	
-	_attempt_download()
+	var artifacts_url = "https://api.github.com/repos/%s/%s/actions/runs/%s/artifacts" % [
+		OWNER,
+		REPO,
+		current_run.id
+	]
+	
+	var headers = [
+		"Accept: application/vnd.github+json",
+		"User-Agent: GodotEngine"
+	]
+	
+	right_text.text = "Fetching artifacts..."
+	var error = artifact_request.request(artifacts_url, headers)
+	if error != OK:
+		print("Failed to fetch artifacts: ", error_string(error))
+		_handle_download_error("Failed to fetch artifacts!")
+		return
 
-func _on_artifact_request_completed(result, response_code, response_headers, body):
+func _on_artifact_request_completed(result, response_code, headers, body):
 	if response_code != 200:
 		print("Failed to get artifacts")
 		right_text.text = "Failed! No artifacts"
@@ -154,22 +171,47 @@ func _on_artifact_request_completed(result, response_code, response_headers, bod
 		return
 		
 	var json = JSON.parse_string(body.get_string_from_utf8())
-	if json == null or json.size() == 0:
+	if json == null or not json.has("artifacts") or json.artifacts.size() == 0:
 		print("No artifacts found")
 		right_text.text = "Failed! No artifacts"
 		is_downloading = false
 		return
 		
-	var artifact = json[0]
-	var download_url = artifact.url
+	var artifact = json.artifacts[0]
+	var encoded_name = artifact.name.uri_encode()
+	download_size = artifact.size_in_bytes
+	downloaded_bytes = 0
+	
+	var download_url = "https://nightly.link/%s/%s/actions/runs/%s/%s.zip" % [
+		OWNER,
+		REPO,
+		workflow_runs[current_workflow_index].id,
+		encoded_name
+	]
 	print("Starting artifact download from: ", download_url)
 	
+	download_request.use_threads = true
+	download_request.download_chunk_size = 65536
+		
+	download_timer = Timer.new()
+	add_child(download_timer)
+	download_timer.timeout.connect(func():
+		var elapsed = int(Time.get_unix_time_from_system() - download_start_time)
+		var current_bytes = download_request.get_downloaded_bytes()
+		
+		if download_size > 0:
+			var progress = (float(current_bytes) / float(download_size)) * 100.0
+			right_text.text = "%.2f%% | %ds" % [progress, elapsed]
+		else:
+			right_text.text = "Downloading... | %ds" % elapsed
+	)
+	download_timer.start(0.1)
+	
 	var download_headers = [
-		"User-Agent: GodotEngine",
-		"Accept: application/zip"
+		"Accept: application/zip",
+		"User-Agent: GodotEngine"
 	]
 	
-	right_text.text = "Starting download..."
 	var error = download_request.request(download_url, download_headers)
 	if error != OK:
 		print("Failed to start download")
@@ -177,10 +219,14 @@ func _on_artifact_request_completed(result, response_code, response_headers, bod
 		is_downloading = false
 
 func _on_download_completed(result, response_code, headers, body):
+	for header in headers:
+		if header.begins_with("Content-Length:"):
+			total_bytes = header.split(" ")[1].to_int()
+			break
+	
+	current_bytes = body.size() if body != null else 0
+	
 	print("Download completed with result: ", result)
-	print("Response code: ", response_code)
-	print("Headers: ", headers)
-	print("Body size: ", body.size() if body != null else "null")
 	
 	if result != HTTPRequest.RESULT_SUCCESS:
 		_handle_download_error("Error: %d (%s)" % [result, error_string(result)])
@@ -200,7 +246,7 @@ func _on_download_completed(result, response_code, headers, body):
 	var dir = DirAccess.open(base_dir)
 	
 	if not dir.dir_exists(TEMP_DIR):
-		dir.make_dir_recursive(TEMP_DIR)
+		dir.make_dir(TEMP_DIR)
 	
 	var zip_path = base_dir.path_join(TEMP_DIR).path_join("download.zip")
 	print("Saving downloaded file to: ", zip_path)
@@ -217,7 +263,7 @@ func _on_download_completed(result, response_code, headers, body):
 	
 	var target_dir = base_dir.path_join(DOWNLOAD_DIR)
 	if not dir.dir_exists(DOWNLOAD_DIR):
-		dir.make_dir_recursive(DOWNLOAD_DIR)
+		dir.make_dir(DOWNLOAD_DIR)
 	
 	print("Extracting files to: ", target_dir)
 	var zip_reader = ZIPReader.new()
@@ -250,25 +296,26 @@ func _on_download_completed(result, response_code, headers, body):
 		if out_file != null:
 			out_file.store_buffer(content)
 			out_file.close()
-			print("Extracted: ", file_name)
 	
 	zip_reader.close()
 	cleanup_temp()
 	
 	var elapsed = int(Time.get_unix_time_from_system() - download_start_time)
 	right_text.text = "Done! | %ds" % elapsed
+	
+	if download_timer:
+		download_timer.stop()
+		download_timer.queue_free()
+		download_timer = null
 
-func _on_download_progress(bytes_downloaded: float, bytes_total: float):
-	downloaded_bytes = bytes_downloaded
-	total_bytes = bytes_total
+func _on_download_progress(downloaded: float, total: float):
+	print("Download progress - Downloaded: %d, Total: %d" % [downloaded, total])
+	downloaded_bytes = downloaded
 	
-	var progress = 0
-	if total_bytes > 0:
-		progress = int((downloaded_bytes / total_bytes) * 100)
-	
-	var elapsed = int(Time.get_unix_time_from_system() - download_start_time)
-	
-	right_text.text = "Downloading... %d%% | %ds" % [progress, elapsed]
+	if download_size > 0:
+		var progress = (downloaded_bytes / download_size) * 100
+		var elapsed = int(Time.get_unix_time_from_system() - download_start_time)
+		right_text.text = "%.2f%% | %ds" % [progress, elapsed]
 
 func cleanup_temp():
 	var base_dir = OS.get_executable_path().get_base_dir()
@@ -313,17 +360,16 @@ func _handle_download_error(error_message: String):
 func _attempt_download():
 	var current_run = workflow_runs[current_workflow_index]
 	
-	var download_url = API_DOWNLOAD_URL % [OWNER, REPO, current_run.head_sha]
-	print("Starting download from: ", download_url)
+	var artifacts_url = ARTIFACTS_API_URL % [OWNER, REPO, current_run.id]
+	print("Fetching artifacts from: ", artifacts_url)
 	
-	var download_headers = [
-		"User-Agent: FunkinLauncher",
-		"Accept: application/zip"
-	]
+	var headers = []
+	if GITHUB_TOKEN != "":
+		headers = ["Authorization: Bearer " + GITHUB_TOKEN]
 	
-	right_text.text = "Starting download..."
-	var error = download_request.request(download_url, download_headers)
+	right_text.text = "Fetching artifacts..."
+	var error = artifact_request.request(artifacts_url, headers)
 	if error != OK:
-		print("Failed to start download: ", error_string(error))
-		_handle_download_error("Failed to start download!")
+		print("Failed to fetch artifacts: ", error_string(error))
+		_handle_download_error("Failed to fetch artifacts!")
 		return
