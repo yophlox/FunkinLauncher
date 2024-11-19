@@ -8,6 +8,8 @@ A remake of the [Funkin' Launcher internal dev tool](https://funkin.me/blog/2024
 - Navigate through workflows using the left and right arrow keys.
 - View detailed information about the currently selected workflow.
 - View the commit hash, author, and commit message of the currently selected workflow.
+- Download the artifacts from the currently selected workflow.
+- Switch between repositories.
 
 ## Building
 
@@ -26,8 +28,3 @@ build it like any other Godot project lol
 - [avievie](https://github.com/avievie) - some assets
 
 - [Funkin' Crew](https://github.com/FunkinCrew) - Assets
-
-## TODOS:
-
-- Add a way to switch between repositories.
-- Add a way to download the files from the currently selected workflow.

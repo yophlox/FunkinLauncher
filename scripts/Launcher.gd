@@ -1,12 +1,12 @@
 extends Node
 
 const GITHUB_API_URL = "https://api.github.com"
-const OWNER = "FNF-CNE-Devs"
-const REPO = "CodenameEngine"
+var OWNER = "FNF-CNE-Devs"
+var REPO = "CodenameEngine"
 const MAX_WORKFLOWS = 100
 const GITHUB_TOKEN = ""
 const TEMP_DIR = "temp"
-const DOWNLOAD_DIR = "downloads/" + REPO + "-" + OWNER
+var DOWNLOAD_DIR = "downloads/" + REPO + "-" + OWNER
 const API_DOWNLOAD_URL = "https://github.com/%s/%s/archive/%s.zip"
 const ARTIFACTS_API_URL = GITHUB_API_URL + "/repos/%s/%s/actions/runs/%s/artifacts"
 
@@ -34,6 +34,12 @@ var download_retries: int = 0
 const MAX_RETRIES = 1
 var current_bytes = 0
 var download_timer: Timer = null
+var current_repo_index = 0
+var repos = [
+	{"owner": "FNF-CNE-Devs", "repo": "CodenameEngine"}  # Default repo
+]
+var is_typing_repo = false
+var typed_repo = ""
 
 func _ready():
 	http_request = HTTPRequest.new()
@@ -117,12 +123,46 @@ func update_page_counter():
 	page_counter.text = "%d/%d" % [current, total]
 
 func _input(event):
-	if event.is_action_pressed("ui_left"):
-		change_workflow(-1)
-	elif event.is_action_pressed("ui_right"):
-		change_workflow(1)
-	elif event.is_action_pressed("ui_accept"):
-		download_current_workflow()
+	if is_typing_repo:
+		if event is InputEventKey and event.pressed:
+			if event.keycode == KEY_ENTER:
+				var parts = typed_repo.split("/")
+				if parts.size() == 2:
+					repos.append({"owner": parts[0], "repo": parts[1]})
+					current_repo_index = repos.size() - 1
+					OWNER = parts[0]
+					REPO = parts[1]
+					fetch_workflow_info()
+				
+				is_typing_repo = false
+				typed_repo = ""
+				
+			elif event.keycode == KEY_ESCAPE:
+				is_typing_repo = false
+				typed_repo = ""
+				
+			elif event.keycode == KEY_BACKSPACE:
+				typed_repo = typed_repo.substr(0, max(0, typed_repo.length() - 1))
+				
+			elif event.is_pressed() and not event.echo:
+				var char = char(event.unicode)
+				if char.length() > 0:
+					typed_repo += char
+					
+			if is_typing_repo:
+				middle_text.text = "Enter repo: " + typed_repo
+				
+	else:
+		if event.is_action_pressed("ui_left"):
+			change_workflow(-1)
+		elif event.is_action_pressed("ui_right"):
+			change_workflow(1)
+		elif event.is_action_pressed("ui_accept"):
+			download_current_workflow()
+		elif event is InputEventKey and event.pressed and event.keycode == KEY_S:
+			is_typing_repo = true
+			typed_repo = ""
+			middle_text.text = "Enter repo: "
 
 func change_workflow(direction):
 	if workflow_runs.size() == 0:
@@ -339,7 +379,10 @@ func update_download_info():
 	var current_run = workflow_runs[current_workflow_index]
 	
 	left_text.text = truncate_text(REPO, 9)
-	middle_text.text = "%s/%s (%s)" % [OWNER, REPO, current_run.head_sha.substr(0, 7)]
+	if is_typing_repo:
+		middle_text.text = "Enter repo: " + typed_repo
+	else:
+		middle_text.text = "%s/%s (%s)" % [OWNER, REPO, current_run.head_sha.substr(0, 7)]
 	
 	if not is_downloading:
 		right_text.text = "Ready | 0s"
