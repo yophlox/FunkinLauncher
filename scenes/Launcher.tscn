@@ -111,14 +111,14 @@ theme_override_font_sizes/font_size = 22
 text = "..."
 
 [node name="dl text3" type="Label" parent="Download Text Group"]
-offset_left = 1119.5
-offset_top = 705.0
-offset_right = 1235.5
-offset_bottom = 730.0
+offset_left = 1069.0
+offset_top = 711.0
+offset_right = 1185.0
+offset_bottom = 736.0
 theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
-text = "..."
+text = "Ready "
 
 [node name="Github Stuff" type="Node" parent="."]
 script = ExtResource("5_f5r6u")
@@ -126,3 +126,36 @@ script = ExtResource("5_f5r6u")
 [node name="Mmm___audio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_o7w5h")
 autoplay = true
+parameters/looping = true
+
+[node name="Extra Text" type="Node" parent="."]
+
+[node name="ver shit" type="Label" parent="Extra Text"]
+offset_left = 9.0
+offset_top = 11.0
+offset_right = 363.0
+offset_bottom = 39.0
+theme_override_colors/font_color = Color(1, 0.670588, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 30
+text = "Funkin' Launcher v1.0.0"
+
+[node name="ver shit2" type="Label" parent="Extra Text"]
+offset_left = 9.0
+offset_top = 49.0
+offset_right = 798.0
+offset_bottom = 77.0
+theme_override_colors/font_color = Color(1, 0.670588, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 30
+text = "Made by YoPhlox, FNF owned by the Funkin' Crew inc."
+
+[node name="Press S" type="Label" parent="Extra Text"]
+offset_left = 8.0
+offset_top = 86.0
+offset_right = 480.0
+offset_bottom = 114.0
+theme_override_colors/font_color = Color(1, 0.670588, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 30
+text = "Press S to switch repos"
