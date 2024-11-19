@@ -49,16 +49,31 @@ func _on_request_completed(result, response_code, headers, body):
 	workflow_runs = json.workflow_runs
 	update_workflow_display()
 
+func get_first_line(text: String) -> String:
+	var lines = text.split("\n")
+	return lines[0].strip_edges()
+
+func truncate_text(text: String, max_length: int) -> String:
+	if text.length() <= max_length:
+		return text
+	return text.substr(0, max_length - 3) + "..."
+
 func update_workflow_display():
 	if workflow_runs.size() == 0:
 		return
 	
 	var current_run = workflow_runs[current_workflow_index]
 	
-	commit_name.text = current_run.head_commit.message
-	workflow_name.text = "Workflow: " + current_run.name
-	trigger_commit.text = "Triggering Commit: " + current_run.head_commit.message
-	author_name.text = "Author: " + current_run.actor.login
+	var commit_message = get_first_line(current_run.head_commit.message)
+	
+	var truncated_commit = truncate_text(commit_message, 33)
+	var truncated_workflow = truncate_text(current_run.name, 30)
+	var truncated_author = truncate_text(current_run.actor.login, 20)
+	
+	commit_name.text = truncated_commit
+	workflow_name.text = "Workflow: " + truncated_workflow
+	trigger_commit.text = "Triggering Commit: " + commit_message
+	author_name.text = "Author: " + truncated_author
 	commit_hash.text = "Commit Hash: " + current_run.head_sha.substr(0, 7)
 	
 	update_page_counter()
