@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://8n4ttb2l3v1p"]
+
+[ext_resource type="Texture2D" uid="uid://bsk5iibsnbr2g" path="res://assets/images/mainBG.png" id="1_gsswe"]
+[ext_resource type="Texture2D" uid="uid://spj7jxewvq7s" path="res://assets/images/freeplayBox.png" id="2_sp423"]
+[ext_resource type="Texture2D" uid="uid://df07vdvsc2v2y" path="res://assets/images/freeplayBox2.png" id="3_x525b"]
+[ext_resource type="FontFile" uid="uid://3e3qvlg1hli8" path="res://assets/fonts/5by7.ttf" id="4_camlv"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="MainBG" type="TextureRect" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("1_gsswe")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = 63.0
+offset_top = 219.0
+offset_right = 1111.0
+offset_bottom = 458.0
+texture = ExtResource("2_sp423")
+
+[node name="FreeplayBox2" type="Sprite2D" parent="."]
+position = Vector2(576.25, 590.75)
+scale = Vector2(0.910135, 0.847826)
+texture = ExtResource("3_x525b")
+
+[node name="git-commit-name" type="Label" parent="."]
+offset_left = 189.0
+offset_top = 266.0
+offset_right = 356.0
+offset_bottom = 291.0
+theme_override_colors/font_color = Color(0.951364, 0.903375, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "push name real"
+
+[node name="git-workflow-name2" type="Label" parent="."]
+offset_left = 186.0
+offset_top = 296.0
+offset_right = 353.0
+offset_bottom = 321.0
+theme_override_colors/font_color = Color(0.951364, 0.903375, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "Workflow: Windows Build"
