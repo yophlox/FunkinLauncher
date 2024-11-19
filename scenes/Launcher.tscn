@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://8n4ttb2l3v1p"]
+[gd_scene load_steps=6 format=3 uid="uid://8n4ttb2l3v1p"]
 
 [ext_resource type="Texture2D" uid="uid://bsk5iibsnbr2g" path="res://assets/images/mainBG.png" id="1_gsswe"]
 [ext_resource type="Texture2D" uid="uid://spj7jxewvq7s" path="res://assets/images/freeplayBox.png" id="2_sp423"]
 [ext_resource type="Texture2D" uid="uid://df07vdvsc2v2y" path="res://assets/images/freeplayBox2.png" id="3_x525b"]
 [ext_resource type="FontFile" uid="uid://3e3qvlg1hli8" path="res://assets/fonts/5by7.ttf" id="4_camlv"]
+[ext_resource type="Script" path="res://scripts/Launcher.gd" id="5_f5r6u"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -34,7 +35,7 @@ offset_bottom = 264.0
 theme_override_colors/font_color = Color(0.802533, 0.957362, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 40
-text = "push name real"
+text = "..."
 
 [node name="git-workflow-name" type="Label" parent="Git Text Group"]
 offset_left = 129.0
@@ -44,7 +45,7 @@ offset_bottom = 299.0
 theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
-text = "Workflow: Windows Build"
+text = "Workflow: ..."
 
 [node name="git-trigger-name" type="Label" parent="Git Text Group"]
 offset_left = 129.0
@@ -54,7 +55,7 @@ offset_bottom = 320.0
 theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
-text = "Triggering Commit: push name real"
+text = "Triggering Commit: ..."
 
 [node name="git-author-name2" type="Label" parent="Git Text Group"]
 offset_left = 129.0
@@ -64,7 +65,7 @@ offset_bottom = 341.0
 theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
-text = "Author: YoPhlox"
+text = "Author: ..."
 
 [node name="git-author-name3" type="Label" parent="Git Text Group"]
 offset_left = 129.0
@@ -74,7 +75,7 @@ offset_bottom = 362.0
 theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
-text = "Commit Hash: insert hash here lol"
+text = "Commit Hash: ..."
 
 [node name="Download Text Group" type="Node" parent="."]
 
@@ -107,3 +108,6 @@ theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
 text = "..."
+
+[node name="Github Stuff" type="Node" parent="."]
+script = ExtResource("5_f5r6u")
