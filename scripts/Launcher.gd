@@ -3,25 +3,33 @@ extends Node
 const GITHUB_API_URL = "https://api.github.com"
 const OWNER = "FNF-CNE-Devs"
 const REPO = "CodenameEngine"
+const MAX_WORKFLOWS = 100
+const GITHUB_TOKEN = ""
 
 @onready var commit_name = $"../Git Text Group/git-commit-name"
 @onready var workflow_name = $"../Git Text Group/git-workflow-name"
 @onready var trigger_commit = $"../Git Text Group/git-trigger-name"
 @onready var author_name = $"../Git Text Group/git-author-name2"
 @onready var commit_hash = $"../Git Text Group/git-author-name3"
+@onready var page_counter = $"../Git Text Group/page-counter"
 
 var http_request: HTTPRequest
+var current_workflow_index = 0
+var workflow_runs = []
 
 func _ready():
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
-	
 	fetch_workflow_info()
+	update_page_counter()
 
 func fetch_workflow_info():
-	var headers = []	
-	var endpoint = "/repos/%s/%s/actions/runs" % [OWNER, REPO]
+	var headers = []
+	if GITHUB_TOKEN != "":
+		headers = ["Authorization: Bearer " + GITHUB_TOKEN]
+	
+	var endpoint = "/repos/%s/%s/actions/runs?per_page=%d" % [OWNER, REPO, MAX_WORKFLOWS]
 	var url = GITHUB_API_URL + endpoint
 	
 	var error = http_request.request(url, headers)
@@ -34,17 +42,47 @@ func _on_request_completed(result, response_code, headers, body):
 		return
 	
 	var json = JSON.parse_string(body.get_string_from_utf8())
-	if json == null or not json.has("workflow_runs") or json.workflow_runs.size() == 0:
+	if json == null or not json.has("workflow_runs"):
 		print("No workflow runs found")
 		return
 	
-	var latest_run = json.workflow_runs[0]
+	workflow_runs = json.workflow_runs
+	update_workflow_display()
+
+func update_workflow_display():
+	if workflow_runs.size() == 0:
+		return
 	
-	commit_name.text = latest_run.head_commit.message
-	workflow_name.text = "Workflow: " + latest_run.name
-	trigger_commit.text = "Triggering Commit: " + latest_run.head_commit.message
-	author_name.text = "Author: " + latest_run.actor.login
-	commit_hash.text = "Commit Hash: " + latest_run.head_sha.substr(0, 7)
+	var current_run = workflow_runs[current_workflow_index]
+	
+	commit_name.text = current_run.head_commit.message
+	workflow_name.text = "Workflow: " + current_run.name
+	trigger_commit.text = "Triggering Commit: " + current_run.head_commit.message
+	author_name.text = "Author: " + current_run.actor.login
+	commit_hash.text = "Commit Hash: " + current_run.head_sha.substr(0, 7)
+	
+	update_page_counter()
+
+func update_page_counter():
+	var total = workflow_runs.size()
+	var current = current_workflow_index + 1 if total > 0 else 0
+	page_counter.text = "%d/%d" % [current, total]
+
+func _input(event):
+	if event.is_action_pressed("ui_left"):
+		change_workflow(-1)
+	elif event.is_action_pressed("ui_right"):
+		change_workflow(1)
+
+func change_workflow(direction):
+	if workflow_runs.size() == 0:
+		return
+	
+	current_workflow_index = (current_workflow_index + direction) % workflow_runs.size()
+	if current_workflow_index < 0:
+		current_workflow_index = workflow_runs.size() - 1
+	
+	update_workflow_display()
 
 func _process(_delta):
 	pass 

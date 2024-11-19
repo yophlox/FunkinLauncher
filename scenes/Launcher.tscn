@@ -77,6 +77,16 @@ theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
 text = "Commit Hash: ..."
 
+[node name="page-counter" type="Label" parent="Git Text Group"]
+offset_left = 868.0
+offset_top = 239.0
+offset_right = 1246.0
+offset_bottom = 264.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "1/100"
+
 [node name="Download Text Group" type="Node" parent="."]
 
 [node name="dl text" type="Label" parent="Download Text Group"]
