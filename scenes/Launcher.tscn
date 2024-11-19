@@ -13,9 +13,9 @@ offset_bottom = 40.0
 texture = ExtResource("1_gsswe")
 
 [node name="TextureRect" type="TextureRect" parent="."]
-offset_left = 63.0
-offset_top = 219.0
-offset_right = 1111.0
+offset_left = 3.0
+offset_top = 195.0
+offset_right = 1147.0
 offset_bottom = 458.0
 texture = ExtResource("2_sp423")
 
@@ -24,22 +24,86 @@ position = Vector2(576.25, 590.75)
 scale = Vector2(0.910135, 0.847826)
 texture = ExtResource("3_x525b")
 
-[node name="git-commit-name" type="Label" parent="."]
-offset_left = 189.0
-offset_top = 266.0
-offset_right = 356.0
-offset_bottom = 291.0
-theme_override_colors/font_color = Color(0.951364, 0.903375, 1, 1)
+[node name="Git Text Group" type="Node" parent="."]
+
+[node name="git-commit-name" type="Label" parent="Git Text Group"]
+offset_left = 129.0
+offset_top = 236.0
+offset_right = 433.0
+offset_bottom = 264.0
+theme_override_colors/font_color = Color(0.802533, 0.957362, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 40
 text = "push name real"
 
-[node name="git-workflow-name2" type="Label" parent="."]
-offset_left = 186.0
-offset_top = 296.0
-offset_right = 353.0
-offset_bottom = 321.0
-theme_override_colors/font_color = Color(0.951364, 0.903375, 1, 1)
+[node name="git-workflow-name" type="Label" parent="Git Text Group"]
+offset_left = 129.0
+offset_top = 274.0
+offset_right = 395.0
+offset_bottom = 299.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
 theme_override_fonts/font = ExtResource("4_camlv")
 theme_override_font_sizes/font_size = 22
 text = "Workflow: Windows Build"
+
+[node name="git-trigger-name" type="Label" parent="Git Text Group"]
+offset_left = 129.0
+offset_top = 295.0
+offset_right = 514.0
+offset_bottom = 320.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "Triggering Commit: push name real"
+
+[node name="git-author-name2" type="Label" parent="Git Text Group"]
+offset_left = 129.0
+offset_top = 316.0
+offset_right = 395.0
+offset_bottom = 341.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "Author: YoPhlox"
+
+[node name="git-author-name3" type="Label" parent="Git Text Group"]
+offset_left = 129.0
+offset_top = 337.0
+offset_right = 507.0
+offset_bottom = 362.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "Commit Hash: insert hash here lol"
+
+[node name="Download Text Group" type="Node" parent="."]
+
+[node name="dl text" type="Label" parent="Download Text Group"]
+offset_left = 47.0
+offset_top = 572.0
+offset_right = 163.0
+offset_bottom = 597.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "..."
+
+[node name="dl text2" type="Label" parent="Download Text Group"]
+offset_left = 248.0
+offset_top = 572.0
+offset_right = 364.0
+offset_bottom = 597.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "..."
+
+[node name="dl text3" type="Label" parent="Download Text Group"]
+offset_left = 1005.0
+offset_top = 567.0
+offset_right = 1121.0
+offset_bottom = 592.0
+theme_override_colors/font_color = Color(0.803922, 0.956863, 1, 1)
+theme_override_fonts/font = ExtResource("4_camlv")
+theme_override_font_sizes/font_size = 22
+text = "..."
