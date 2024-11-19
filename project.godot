@@ -12,14 +12,15 @@ config_version=5
 
 config/name="Funkin' Launcher"
 config/description="A remake of the Funkin' Launcher internal dev tool in godot.
-By YoPhlox!!
+Original by: The Funkin' Crew inc.
+Remake by: YoPhlox
 
 "
 config/version="1.0.0"
 run/main_scene="res://scenes/Launcher.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 boot_splash/show_image=false
-config/icon="res://icon.svg"
+config/icon="res://iconOG.png"
 
 [display]
 
