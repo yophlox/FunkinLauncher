@@ -19,6 +19,13 @@ A remake of the [Funkin' Launcher internal dev tool](https://funkin.me/blog/2024
 
 build it like any other Godot project lol
 
+## Credits:
+
+- [YoPhlox (me!)](https://github.com/YoPhlox) - mmm code!
+
+- [avievie](https://github.com/avievie) - some assets
+
+- [Funkin' Crew](https://github.com/FunkinCrew) - Assets
 
 ## TODOS:
 

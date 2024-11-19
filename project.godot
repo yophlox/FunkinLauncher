@@ -10,15 +10,22 @@ config_version=5
 
 [application]
 
-config/name="FunkinLauncher"
+config/name="Funkin' Launcher"
+config/description="A remake of the Funkin' Launcher internal dev tool in godot.
+By YoPhlox!!
+
+"
+config/version="1.0.0"
 run/main_scene="res://scenes/Launcher.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [display]
 
 window/size/viewport_width=1368
 window/size/viewport_height=800
+mouse_cursor/custom_image="res://assets/images/cursor.png"
 
 [rendering]
 
